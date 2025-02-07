@@ -4,6 +4,7 @@ import path from "node:path";
 import * as mongoose from 'mongoose';
 import config from './config';
 import mongoDb from './mongoDb';
+import usersRouter from './routes/users';
 
 const app = express();
 const port = 8000;
@@ -12,11 +13,15 @@ const router = express.Router();
 app.use(cors());
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname,'public')));
+
+app.use('/users', usersRouter);
+
 app.use(router);
 
-router.ws('/chat', (ws, res) => {
-    console.log('client connected');
-});
+
+// router.ws('/chat', (ws, res) => {
+//     console.log('client connected');
+// });
 
 const run = async () => {
   await mongoose.connect(config.mongoPath);
