@@ -5,13 +5,13 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Avatar } from "@mui/material";
+import { Avatar, Button } from '@mui/material';
 import { useAppDispatch, useAppSelector } from "../../app/hooks.ts";
 import { selectRegisterError, selectRegisterLoading } from './usersSlice.ts';
 import { NavLink, useNavigate } from "react-router-dom";
 import { register } from "./usersThunks.ts";
 import { RegisterMutation } from "../../typesUI.ts";
-import { LoadingButton } from '@mui/lab';
+
 
 const RegisterPage = () => {
   const dispatch = useAppDispatch();
@@ -98,7 +98,7 @@ const RegisterPage = () => {
               />
             </Grid>
           </Grid>
-          <LoadingButton
+          <Button
             loading={loading}
             type="submit"
             fullWidth
@@ -106,7 +106,7 @@ const RegisterPage = () => {
             sx={{ mt: 3, mb: 2 }}
           >
             Sign Up
-          </LoadingButton>
+          </Button>
           <Grid container justifyContent="center">
             <Grid>
               <NavLink style={{ color: "#1976d2" }} to="/login">
