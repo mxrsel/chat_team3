@@ -7,6 +7,20 @@ import { RequestWithUser } from "../middlewear/auth";
 
 const usersRouter = express.Router();
 
+usersRouter.get('/', async(_req, res, next) => {
+  try {
+    const onlineUsers = await User.find();
+
+    if(!onlineUsers) {
+      res.status(401).send('Can not display list')
+    }
+
+    res.status(200).send(onlineUsers);
+  } catch(e) {
+    next(e)
+  }
+})
+
 usersRouter.post("/register", async (req, res, next) => {
   try {
     const user = new User({
@@ -36,7 +50,9 @@ usersRouter.post("/sessions", async (req, res) => {
     res.status(400).send({ error: "Password is wrong" });
     return;
   }
-  user.generateToken();
+  if (!user.token) {
+    user.generateToken();
+  }
   await user.save();
   res.send({ message: "Username and password correct!", user });
 });

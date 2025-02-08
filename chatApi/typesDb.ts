@@ -3,6 +3,7 @@ export interface UserFields {
   password: string;
   token: string;
   role: string;
+  isOnline: boolean;
 }
 
 export interface Online {

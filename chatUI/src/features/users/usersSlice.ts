@@ -1,10 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from "../../app/store.ts";
-import { login, register } from "./usersThunks.ts";
-import { GlobalError, User, ValidationError } from "../../typesUI.ts";
+import { login, register } from './usersThunks.ts';
+import { GlobalError, User, ValidationError } from '../../typesUI.ts';
 
 interface UsersState {
   user: User | null;
+  usersListLoading: boolean;
+  usersListError: boolean;
   registerLoading: boolean;
   registerError: ValidationError | null;
   loginLoading: boolean;
@@ -13,6 +15,8 @@ interface UsersState {
 
 const initialState: UsersState = {
   user: null,
+  usersListLoading: false,
+  usersListError: false,
   registerLoading: false,
   registerError: null,
   loginLoading: false,
@@ -67,4 +71,4 @@ export const usersSlice = createSlice({
 });
 
 export const usersReducer = usersSlice.reducer;
-export const { unsetUser } = usersSlice.actions;
+export const {unsetUser } = usersSlice.actions;

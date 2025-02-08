@@ -35,3 +35,8 @@ export interface ValidationError {
 export interface GlobalError {
   error: string;
 }
+
+export interface OnlineUsers {
+  token: string;
+  username: string;
+}

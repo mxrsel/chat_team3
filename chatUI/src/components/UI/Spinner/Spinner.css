@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin: 8px;
+  background: #555555;
+}
+
+.circle:nth-child(1) {
+  animation: animPoints5 2.5s linear infinite;
+}
+
+.circle:nth-child(2) {
+  animation: animPoints5 2.5s linear .5s infinite;
+}
+
+.circle:nth-child(3) {
+  animation: animPoints5 2.5s linear 1s infinite;
+}
+
+.circle:nth-child(4) {
+  animation: animPoints5 2.5s linear 1.5s infinite;
+}
+
+.circle:nth-child(5) {
+  animation: animPoints5 2.5s linear 2s infinite;
+}
+
+@keyframes animPoints5 {
+  0% {transform: scale(1);
+    background: #cccccc;
+  }
+  50% {transform: scale(1);
+    background: #555555;}
+  100% {transform: scale(1);
+    background: #cccccc;}
+
+}

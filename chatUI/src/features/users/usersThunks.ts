@@ -6,7 +6,7 @@ import {
   RegisterResponse,
   User,
   ValidationError,
-} from "../../typesUI.ts";
+} from '../../typesUI.ts';
 import axiosApi from "../../utils/axiosApi.ts";
 import { isAxiosError } from "axios";
 import { RootState } from "../../app/store.ts";
@@ -23,6 +23,7 @@ export const register = createAsyncThunk<
         "/users/register",
         registerMutation,
       );
+      localStorage.setItem('token', response.data.user.token);
       return response.data;
     } catch (error) {
       if (
@@ -48,6 +49,7 @@ export const login = createAsyncThunk<
       "users/sessions",
       loginMutation,
     );
+    localStorage.setItem('token', response.data.user.token);
     return response.data.user;
   } catch (error) {
     if (
