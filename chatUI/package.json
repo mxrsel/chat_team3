@@ -7,11 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format:check": "npx prettier . --check",
+    "format": "npx prettier . --write"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.3",
+    "@mui/lab": "^6.0.0-beta.26",
     "@mui/material": "^6.4.3",
     "@mui/styled-engine-sc": "^6.4.3",
     "@reduxjs/toolkit": "^2.5.1",
