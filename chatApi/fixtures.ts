@@ -17,7 +17,7 @@ const run = async () => {
       username: "Jane",
       password: "123",
       token: randomUUID(),
-      role: "admin",
+      role: "moderator",
     },
     {
       username: "John",
