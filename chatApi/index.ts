@@ -7,7 +7,7 @@ import config from './config';
 import mongoDb from './mongoDb';
 import usersRouter from './routes/users';
 import { WebSocket } from 'ws';
-import { Online } from './typesDb';
+import { IncomingMessages } from './typesDb';
 import User from './models/User';
 import Message from './models/Message';
 
@@ -22,108 +22,110 @@ app.use('/public', express.static(path.join(__dirname,'public')));
 
 app.use('/users', usersRouter);
 
-const activeConnections:{[key: string]: WebSocket} = {};
-let userOnline: Online[] = [];
-let userData: Online;
 const connectedClients: WebSocket[] = [];
 
 router.ws('/chat', async (ws, _res) => {
-  const id = crypto.randomUUID();
-  activeConnections[id] = ws;
   connectedClients.push(ws);
+  console.log('New client connected. Total clients:', connectedClients.length);
   let token = '';
 
-  const messages = await Message.find().sort({datetime: -1}).populate('user', 'username role _id').limit(30);
-
+  const messages = await Message.find().sort({ datetime: -1 }).limit(30);
+  console.log(messages)
   ws.send(JSON.stringify({
-    type: 'LOGIN_USER',
+    type: 'MESSAGES',
     payload: messages,
   }));
 
   ws.on('message', async (message) => {
     try {
-      const decodedMessage = JSON.parse(message.toString());
+      const decodedMessage = JSON.parse(message.toString()) as IncomingMessages;
 
-      if (decodedMessage.type === 'NEW_USER') {
-
-        const user = await User.findById({ _id: decodedMessage.id });
-
+      if (decodedMessage.type === 'USER_LOGIN') {
+        const user = await User.findOne({ token: decodedMessage.payload });
         if (!user) {
           ws.close();
           return;
         }
+        user.isOnline = true;
+        await user.save();
+        token = user.token;
 
-        const newUser = {
-          _id: id,
-          username: user.username,
-        };
-
-        userOnline.push(newUser);
-        userData = newUser;
-
-        Object.values(activeConnections).forEach((connection) => {
-          const outgoingMessage = { type: 'SET_ONLINE_USERS', payload: userOnline };
-          connection.send(JSON.stringify(outgoingMessage));
+        const onlineUsers = await User.find({ isOnline: true });
+        connectedClients.forEach((client) => {
+          client.send(JSON.stringify({
+            type: 'USERS',
+            payload: onlineUsers,
+          }));
         });
-      } else if (decodedMessage.type === 'NEW_MESSAGE') {
+      } else if (decodedMessage.type === 'USER_LOGOUT') {
+        const user = await User.findOne({ token });
+        if (user) {
+          user.isOnline = false;
+          await user.save();
+        }
+        ws.close();
+      } else if (decodedMessage.type === 'SEND_MESSAGE') {
+        if (!token) {
+          ws.send(JSON.stringify({ error: 'No token provided' }));
+          return;
+        }
+        const user = await User.findOne({ token });
+        if (user) {
+          if (!decodedMessage.payload) {
+            ws.send(JSON.stringify({ error: 'Message text is missing' }));
+            return;
+          }
 
-        const message = {
-          user: decodedMessage.payload.user,
-          message: decodedMessage.payload.message,
-        };
+          if (!decodedMessage.payload) {
+            ws.send(JSON.stringify({ error: 'Message text is missing' }));
+            return;
+          }
 
-        const saveMessage = new Message(message);
-        await saveMessage.save();
+          const message = new Message({
+            user: user._id,
+            message: decodedMessage.payload,
+            datetime: new Date().toISOString(),
+          });
 
-        const messageById = await Message.findOne({ _id: saveMessage._id.toString() }).populate('user', 'username');
 
-        Object.values(activeConnections).forEach((connection) => {
-          const outgoingMessage = { type: 'NEW_MESSAGE', payload: messageById };
-          connection.send(JSON.stringify(outgoingMessage));
-        });
+          const savedMessage =  await message.save();
+          const populatedMessage = await Message.findById(savedMessage._id).populate('user', 'username role _id');
+
+          connectedClients.forEach((client) => {
+            client.send(JSON.stringify({
+              type: 'NEW_MESSAGE',
+              payload: populatedMessage,
+            }));
+          });
+        }
       }
-
     } catch (error) {
       console.error('Error handling message:', error);
-      ws.send(JSON.stringify({error: 'Invalid message'}));
+      ws.close();
     }
   });
 
-  ws.on('close', async () => {
-    console.log('Client disconnected');
+  ws.on('close', () => {
     const index = connectedClients.indexOf(ws);
     if (index !== -1) {
       connectedClients.splice(index, 1);
     }
-
-    const user = await User.findOne({token});
-    if (user) {
-      user.isOnline = false;
-      await user.save();
-    }
-  ws.on('close', () => {
-    userOnline = userOnline.filter((user) => user !== userData);
-    Object.values(activeConnections).forEach((connection) => {
-      const outgoingMessage = { type: 'SET_ONLINE_USERS', payload: userOnline };
-      connection.send(JSON.stringify(outgoingMessage));
-    });
-
-    delete activeConnections[id];
+    console.log('Client disconnected. Total clients:', connectedClients.length);
   });
 });
 
-app.use(router);
+  app.use(router);
 
-const run = async () => {
-  await mongoose.connect(config.mongoPath);
+  const run = async () => {
+    await mongoose.connect(config.mongoPath);
 
-  app.listen(port, () => {
-    console.log(`Server started on port: http://localhost:${port}`);
-  });
+    app.listen(port, () => {
+      console.log(`Server started on port: http://localhost:${port}`);
+    });
 
-  process.on('exit', () => {
-    mongoDb.disconnect()
-  })
-}
+    process.on('exit', () => {
+      mongoDb.disconnect()
+    })
+  }
 
-run().catch(e => console.error(e));
+  run().catch(e => console.error(e))

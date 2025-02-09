@@ -8,7 +8,7 @@ const usersRouter = express.Router();
 
 usersRouter.get('/', async(_req, res, next) => {
   try {
-    const onlineUsers = await User.find({isPublished: true});
+    const onlineUsers = await User.find({isOnline: true});
 
     if (!onlineUsers) {
       res.status(401).send('Can not display list');
@@ -41,7 +41,7 @@ usersRouter.post("/register", async (req, res, next) => {
 });
 
 usersRouter.post("/sessions", async (req, res) => {
-  const user = await User.findOne({ username: req.body.username });
+  const user = await User.findOne({ username: req.body.username, isOnline: true });
   if (!user) {
     res.status(400).send({ error: "Username not found" });
     return;
@@ -53,35 +53,23 @@ usersRouter.post("/sessions", async (req, res) => {
   }
     user.generateToken();
     await user.save();
-  }
+    res.send({ message: "Username and password correct!", user });
+  })
 
-  user.isOnline = true;
-  await user.save();
-  res.send({ message: "Username and password correct!", user });
-});
 
 usersRouter.delete("/sessions", auth, async (req, res, next) => {
   const reqWithAuth = req as RequestWithUser;
   const userFromAuth = reqWithAuth.user;
-
   try {
     const user = await User.findOne({ _id: userFromAuth._id});
-    const user = await User.findOne({ _id: userFromAuth._id });
-
     if (user) {
-      user.isOnline = false;
       user.generateToken();
       user.isOnline = false
       await user.save();
       res.send({
         message: "Success logout",
-      });
+      })
     }
-    }
-
-    res.send({
-      message: "Success logout",
-    });
   } catch (e) {
     next(e);
   }

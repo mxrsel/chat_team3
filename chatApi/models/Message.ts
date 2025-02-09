@@ -10,12 +10,20 @@ const MessageSchema = new Schema({
   },
   message: {
     type: String,
-    require: [true, 'Message is required']
+    required: [true, 'Message is required']
   },
   datetime: {
     type: String,
     default: () => new Date().toISOString(),
   },
+});
+
+MessageSchema.pre('save', function (next) {
+  if (!this.message) {
+    next(new Error('Message is missing'));
+  } else {
+    next();
+  }
 });
 
 const Message = mongoose.model('Message', MessageSchema);
