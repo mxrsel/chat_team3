@@ -23,7 +23,8 @@ export const register = createAsyncThunk<
         "/users/register",
         registerMutation,
       );
-      localStorage.setItem('token', response.data.user.token);
+      sessionStorage.setItem('token', response.data.user.token);
+      console.log(response.data)
       return response.data;
     } catch (error) {
       if (
@@ -49,7 +50,8 @@ export const login = createAsyncThunk<
       "users/sessions",
       loginMutation,
     );
-    localStorage.setItem('token', response.data.user.token);
+    sessionStorage.setItem('token', response.data.user.token);
+    console.log(response.data.user)
     return response.data.user;
   } catch (error) {
     if (

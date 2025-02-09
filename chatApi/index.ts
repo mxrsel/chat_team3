@@ -23,10 +23,10 @@ app.use('/public', express.static(path.join(__dirname,'public')));
 app.use('/users', usersRouter);
 
 const connectedClients: WebSocket[] = [];
-let token = '';
 
 router.ws('/chat', async (ws, _res) => {
   connectedClients.push(ws);
+  let token = '';
 
   const messages = await Message.find().sort({datetime: -1}).populate('user', 'username role _id').limit(30);
 
@@ -107,7 +107,9 @@ router.ws('/chat', async (ws, _res) => {
   ws.on('close', async () => {
     console.log('Client disconnected');
     const index = connectedClients.indexOf(ws);
-    connectedClients.splice(index, 1);
+    if (index !== -1) {
+      connectedClients.splice(index, 1);
+    }
 
     const user = await User.findOne({token});
     if (user) {

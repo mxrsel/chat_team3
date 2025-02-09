@@ -9,7 +9,7 @@ const usersRouter = express.Router();
 
 usersRouter.get('/', async(_req, res, next) => {
   try {
-    const onlineUsers = await User.find();
+    const onlineUsers = await User.find({isPublished: true});
 
     if(!onlineUsers) {
       res.status(401).send('Can not display list')
@@ -50,10 +50,8 @@ usersRouter.post("/sessions", async (req, res) => {
     res.status(400).send({ error: "Password is wrong" });
     return;
   }
-  if (!user.token) {
     user.generateToken();
-  }
-  await user.save();
+    await user.save();
   res.send({ message: "Username and password correct!", user });
 });
 
@@ -61,14 +59,15 @@ usersRouter.delete("/sessions", auth, async (req, res, next) => {
   const reqWithAuth = req as RequestWithUser;
   const userFromAuth = reqWithAuth.user;
   try {
-    const user = await User.findOne({ _id: userFromAuth._id });
+    const user = await User.findOne({ _id: userFromAuth._id});
     if (user) {
       user.generateToken();
+      user.isOnline = false
       await user.save();
+      res.send({
+        message: "Success logout",
+      });
     }
-    res.send({
-      message: "Success logout",
-    });
   } catch (e) {
     next(e);
   }

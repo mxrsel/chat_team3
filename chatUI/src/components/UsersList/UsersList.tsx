@@ -8,11 +8,13 @@ interface Props {
 }
 
 const UsersList: React.FC<Props> = ({onlineUsers}) => {
-  console.log('Пользователи в компоненте:', onlineUsers);
   return (
     <>
+      <h1>Online Now</h1>
       <List>
-      {onlineUsers.map((onlineUser, index) => (
+      {onlineUsers.
+        filter((user) => user.isOnline)
+        .map((onlineUser, index) => (
         <ListItem key={index}
                   sx={{
                     '&:hover': {

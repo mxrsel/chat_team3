@@ -39,4 +39,5 @@ export interface GlobalError {
 export interface OnlineUsers {
   token: string;
   username: string;
+  isOnline: boolean;
 }

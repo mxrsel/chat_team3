@@ -11,35 +11,28 @@ interface OnlineUser {
   username: string;
 }
 
+const getToken = (): string | null => sessionStorage.getItem('token');
+
 const App = () => {
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const ws = useRef<WebSocket | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.log('Authorize first!');
-      navigate('/login');
-      return;
-    }
+  const connectWebSocket = (token: string) => {
+    const ws = new WebSocket('ws://localhost:8000/chat');
 
-    ws.current = new WebSocket('ws://localhost:8000/chat');
-
-    ws.current.onopen = () => {
+    ws.onopen = () => {
       console.log('WebSocket connected');
 
-      if (ws.current) {
-        ws.current.send(
-          JSON.stringify({
-            type: 'USER_LOGIN',
-            payload: token,
-          }),
-        );
-      }
+      ws.send(
+        JSON.stringify({
+          type: 'USER_LOGIN',
+          payload: token,
+        }),
+      );
     };
 
-    ws.current.onmessage = (event) => {
+    ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
       if (message.type === 'USERS') {
@@ -47,12 +40,49 @@ const App = () => {
       }
     };
 
-    ws.current.onclose = () => {
-      console.log('WebSocket disconnected');
+    ws.onclose = () => {
+      console.log('WebSocket disconnected. Reconnecting...');
+      setTimeout(() => connectWebSocket(token), 3000);
     };
 
+    return ws;
+  };
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      console.log('Authorize first!');
+      navigate('/login');
+      return;
+    }
+
+    ws.current = connectWebSocket(token);
+
+    const handleBeforeUnload = () => {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send(
+          JSON.stringify({
+            type: 'USER_LOGOUT',
+            payload: token,
+          }),
+        );
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
-      ws.current?.close();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (ws.current) {
+        ws.current.send(
+          JSON.stringify({
+            type: 'USER_LOGOUT',
+            payload: token,
+          }),
+        );
+        localStorage.removeItem(token)
+        ws.current.close();
+      }
     };
   }, [navigate]);
 
