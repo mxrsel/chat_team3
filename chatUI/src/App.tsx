@@ -1,15 +1,9 @@
-import AppToolbar from "./components/UI/AppToolbar/AppToolbar.tsx";
-import Container from "@mui/material/Container";
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import LoginPage from "./features/users/LoginPage.tsx";
-import RegisterPage from "./features/users/RegisterPage.tsx";
-import { useEffect, useRef, useState } from 'react';
-import UsersList from './components/UsersList/UsersList.tsx';
-
-interface OnlineUser {
-  token: string;
-  username: string;
-}
+import AppToolbar from './components/UI/AppToolbar/AppToolbar.tsx';
+import Container from '@mui/material/Container';
+import { Route, Routes } from 'react-router-dom';
+import LoginPage from './features/users/LoginPage.tsx';
+import RegisterPage from './features/users/RegisterPage.tsx';
+import ChatPage from './features/chat/containers/ChatPage.tsx';
 
 const getToken = (): string | null => sessionStorage.getItem('token');
 
@@ -92,13 +86,12 @@ const App = () => {
       <header>
         <AppToolbar />
       </header>
-
       <main>
         <Container maxWidth="xl">
           <Routes>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path='/' element={<UsersList onlineUsers={onlineUsers}/>}/>
+            <Route path='/' element={<ChatPage/>}/>
             <Route path="*" element={<h1>Not found</h1>} />
           </Routes>
         </Container>

@@ -50,7 +50,7 @@ const UserSchema = new Schema<
   },
   isOnline: {
     type: Boolean,
-    efault: false
+    default: false,
   }
 });
 

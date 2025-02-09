@@ -11,7 +11,7 @@ interface Props {
 }
 
 const UserMenu: React.FC<Props> = ({ user }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);;
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };

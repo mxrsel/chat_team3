@@ -7,7 +7,7 @@ import config from './config';
 import mongoDb from './mongoDb';
 import usersRouter from './routes/users';
 import { WebSocket } from 'ws';
-import { IncomingMessage } from './typesDb';
+import { Online } from './typesDb';
 import User from './models/User';
 import Message from './models/Message';
 
@@ -22,82 +22,67 @@ app.use('/public', express.static(path.join(__dirname,'public')));
 
 app.use('/users', usersRouter);
 
+const activeConnections:{[key: string]: WebSocket} = {};
+let userOnline: Online[] = [];
+let userData: Online;
 const connectedClients: WebSocket[] = [];
 
 router.ws('/chat', async (ws, _res) => {
+  const id = crypto.randomUUID();
+  activeConnections[id] = ws;
   connectedClients.push(ws);
   let token = '';
 
   const messages = await Message.find().sort({datetime: -1}).populate('user', 'username role _id').limit(30);
 
   ws.send(JSON.stringify({
-    type: 'MESSAGES',
+    type: 'LOGIN_USER',
     payload: messages,
   }));
 
   ws.on('message', async (message) => {
     try {
-      const decodedMessage = JSON.parse(message.toString()) as IncomingMessage;
+      const decodedMessage = JSON.parse(message.toString());
 
-      if (decodedMessage.type === 'USER_LOGIN') {
-        token = decodedMessage.payload;
+      if (decodedMessage.type === 'NEW_USER') {
 
-        const user = await User.findOne({token});
-        if (user) {
-          user.isOnline = true;
-          await user.save();
-        } else {
-          ws.close();
-          return;
-        }
+        const user = await User.findById({ _id: decodedMessage.id });
 
-        const onlineUsers = await User.find({isOnline: true});
-        connectedClients.forEach((client) => {
-          client.send(JSON.stringify({
-            type: 'USERS',
-            payload: onlineUsers,
-          }));
-        });
-      } else if (decodedMessage.type === 'USER_LOGOUT') {
-        const user = await User.findOne({token});
-        if (user) {
-          user.isOnline = false;
-          await user.save();
-        }
-
-        const onlineUsers = await User.find({isOnline: true});
-        connectedClients.forEach((client) => {
-          client.send(JSON.stringify({
-            type: 'USERS',
-            payload: onlineUsers,
-          }));
-        });
-      }
-
-      if (decodedMessage.type === 'SEND_MESSAGE') {
-        const user = await User.findOne({token});
         if (!user) {
           ws.close();
           return;
         }
 
-        const newMessage = new Message({
-          user: user._id,
-          message: decodedMessage.payload,
+        const newUser = {
+          _id: id,
+          username: user.username,
+        };
+
+        userOnline.push(newUser);
+        userData = newUser;
+
+        Object.values(activeConnections).forEach((connection) => {
+          const outgoingMessage = { type: 'SET_ONLINE_USERS', payload: userOnline };
+          connection.send(JSON.stringify(outgoingMessage));
         });
+      } else if (decodedMessage.type === 'NEW_MESSAGE') {
 
-        await newMessage.save();
+        const message = {
+          user: decodedMessage.payload.user,
+          message: decodedMessage.payload.message,
+        };
 
-        const id = newMessage._id.toString();
-        const lastMessage = await Message.findOne({_id: id}).populate('user', 'username role _id');
+        const saveMessage = new Message(message);
+        await saveMessage.save();
 
-        connectedClients.forEach((clientWS) => {
-          clientWS.send(JSON.stringify({
-            type: 'NEW_MESSAGE',
-            payload: lastMessage,
-          }));
+        const messageById = await Message.findOne({ _id: saveMessage._id.toString() }).populate('user', 'username');
+
+        Object.values(activeConnections).forEach((connection) => {
+          const outgoingMessage = { type: 'NEW_MESSAGE', payload: messageById };
+          connection.send(JSON.stringify(outgoingMessage));
         });
       }
+
     } catch (error) {
       console.error('Error handling message:', error);
       ws.send(JSON.stringify({error: 'Invalid message'}));
@@ -116,20 +101,15 @@ router.ws('/chat', async (ws, _res) => {
       user.isOnline = false;
       await user.save();
     }
-
-    const onlineUsers = await User.find({isOnline: true});
-    connectedClients.forEach((client) => {
-      client.send(JSON.stringify({
-        type: 'USERS',
-        payload: onlineUsers,
-      }));
+  ws.on('close', () => {
+    userOnline = userOnline.filter((user) => user !== userData);
+    Object.values(activeConnections).forEach((connection) => {
+      const outgoingMessage = { type: 'SET_ONLINE_USERS', payload: userOnline };
+      connection.send(JSON.stringify(outgoingMessage));
     });
-  });
-});
 
-app.get('/online-users', async(_req, res) => {
-  const onlineUsers = await User.find({isOnline: true});
-  res.send(onlineUsers);
+    delete activeConnections[id];
+  });
 });
 
 app.use(router);

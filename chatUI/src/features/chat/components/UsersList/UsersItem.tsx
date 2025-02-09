@@ -1,5 +1,5 @@
 import React from 'react';
-import { OnlineUsers } from '../../typesUI.ts';
+import { OnlineUsers } from '../../../../typesUI.ts';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { List, ListItem } from '@mui/material';

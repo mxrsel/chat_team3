@@ -7,11 +7,6 @@ export interface UserFields {
 }
 
 export interface Online {
-  token: string;
+  _id: string;
   username: string;
-}
-
-export interface IncomingMessage {
-  type: string;
-  payload: string;
 }
