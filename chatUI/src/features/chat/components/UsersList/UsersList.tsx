@@ -1,5 +1,5 @@
 import UsersItem from './UsersItem.tsx';
-import { OnlineUsers } from '../../typesUI.ts';
+import { OnlineUsers } from '../../../../typesUI.ts';
 import React from 'react';
 import { List, ListItem } from '@mui/material';
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const UsersList: React.FC<Props> = ({onlineUsers}) => {
-  console.log('Пользователи в компоненте:', onlineUsers);
+
   return (
     <>
       <List>

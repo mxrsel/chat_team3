@@ -4,22 +4,21 @@ import { Error } from "mongoose";
 import auth from "../middlewear/auth";
 import { RequestWithUser } from "../middlewear/auth";
 
-
 const usersRouter = express.Router();
 
 usersRouter.get('/', async(_req, res, next) => {
   try {
     const onlineUsers = await User.find();
 
-    if(!onlineUsers) {
-      res.status(401).send('Can not display list')
+    if (!onlineUsers) {
+      res.status(401).send('Can not display list');
     }
 
     res.status(200).send(onlineUsers);
   } catch(e) {
     next(e)
   }
-})
+});
 
 usersRouter.post("/register", async (req, res, next) => {
   try {
@@ -27,6 +26,8 @@ usersRouter.post("/register", async (req, res, next) => {
       username: req.body.username,
       password: req.body.password,
     });
+
+    user.isOnline = true;
     user.generateToken();
     await user.save();
     res.send({ user, message: "Register successfully" });
@@ -53,6 +54,8 @@ usersRouter.post("/sessions", async (req, res) => {
   if (!user.token) {
     user.generateToken();
   }
+
+  user.isOnline = true;
   await user.save();
   res.send({ message: "Username and password correct!", user });
 });
@@ -60,12 +63,16 @@ usersRouter.post("/sessions", async (req, res) => {
 usersRouter.delete("/sessions", auth, async (req, res, next) => {
   const reqWithAuth = req as RequestWithUser;
   const userFromAuth = reqWithAuth.user;
+
   try {
     const user = await User.findOne({ _id: userFromAuth._id });
+
     if (user) {
+      user.isOnline = false;
       user.generateToken();
       await user.save();
     }
+
     res.send({
       message: "Success logout",
     });

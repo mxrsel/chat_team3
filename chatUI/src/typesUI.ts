@@ -37,6 +37,13 @@ export interface GlobalError {
 }
 
 export interface OnlineUsers {
-  token: string;
+  _id: string;
   username: string;
+}
+
+export interface IMessage {
+  _id: string;
+  message: string;
+  datetime: string;
+  user: OnlineUsers;
 }
