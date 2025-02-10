@@ -1,12 +1,11 @@
 import AppToolbar from "./components/UI/AppToolbar/AppToolbar.tsx";
 import Container from "@mui/material/Container";
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from "react-router-dom";
 import LoginPage from "./features/users/LoginPage.tsx";
 import RegisterPage from "./features/users/RegisterPage.tsx";
-import ChatPage from './features/chat/containers/ChatPage.tsx';
+import ChatPage from "./features/chat/containers/ChatPage.tsx";
 
 const App = () => {
-
   return (
     <>
       <header>

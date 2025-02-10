@@ -1,12 +1,12 @@
-import { IMessage } from '../../../../typesUI.ts';
-import React from 'react';
-import Message from './Message/Message.tsx';
+import { IMessage } from "../../../../typesUI.ts";
+import React from "react";
+import Message from "./Message/Message.tsx";
 
 interface Props {
   messages: IMessage[];
 }
 
-const Messages:React.FC<Props> = ({messages}) => {
+const Messages: React.FC<Props> = ({ messages }) => {
   return (
     <>
       {messages.map((message) => (

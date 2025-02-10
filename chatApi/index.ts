@@ -86,6 +86,17 @@ router.ws('/chat', async (ws, _res) => {
           }));
         });
       }
+      else if (decodedMessage.type === 'DELETE_MESSAGE') {
+        await Message.deleteOne({_id: decodedMessage.payload});
+        const updatedMessages = await Message.find().sort({datetime: -1}).populate('user', 'username role _id').limit(30);
+
+        Object.values(activeConnections).forEach((connection) => {
+          connection.send(JSON.stringify({
+            type:'UPDATE_MESSAGE',
+            payload: updatedMessages,
+          }));
+        });
+      }
     } catch (e) {
       ws.send(JSON.stringify({error: 'Invalid message format'}));
     }

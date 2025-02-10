@@ -25,7 +25,7 @@ const UserMenu: React.FC<Props> = ({ user }) => {
   const HandleLogout = () => {
     dispatch(logout());
     dispatch(unsetUser());
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
