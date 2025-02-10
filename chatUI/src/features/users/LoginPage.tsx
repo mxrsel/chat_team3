@@ -30,7 +30,7 @@ const RegisterPage = () => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     await dispatch(login(form)).unwrap();
-    navigate('/chat');
+    navigate('/');
   };
 
 
