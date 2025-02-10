@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../app/hooks.ts";
 import UserMenu from "./UserMenu.tsx";
 import AnonimusMenu from "./AnonimusMenu.tsx";
 import { selectUser } from "../../../features/users/usersSlice.ts";
-import Container from '@mui/material/Container';
+import Container from "@mui/material/Container";
 
 const Link = styled(NavLink)({
   color: "inherit",
