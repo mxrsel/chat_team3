@@ -1,0 +1,4 @@
+body {
+  background: linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.73)), url('https://images.pexels.com/photos/17963740/pexels-photo-17963740.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') center center no-repeat fixed;
+  background-size: cover;
+}

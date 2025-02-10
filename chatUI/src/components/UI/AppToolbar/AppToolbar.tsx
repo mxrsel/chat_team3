@@ -17,7 +17,7 @@ const Link = styled(NavLink)({
 const AppToolbar = () => {
   const user = useAppSelector(selectUser);
   return (
-    <AppBar position="sticky" sx={{ mb: 2 }}>
+    <AppBar position="sticky" sx={{ mb: 2, backgroundColor: 'rgba(19,156,156,0.52)'}}>
       <Container>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

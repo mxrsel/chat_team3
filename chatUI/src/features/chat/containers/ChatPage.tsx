@@ -18,6 +18,7 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
   const navigate = useNavigate();
+  const messagesRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -85,14 +86,27 @@ const ChatPage = () => {
     setNewMessage('');
   };
 
+  useEffect(() => {
+    if (messagesRef.current) {
+      const { scrollHeight, clientHeight } = messagesRef.current;
+      messagesRef.current.scrollTop = scrollHeight - clientHeight;
+    }
+  }, [messages]);
+
   return (
     <Container>
       <Box sx={{display: 'flex', justifyContent: 'space-between', height: '420px', flexWrap: 'wrap'}}>
         <Box sx={{width: '350px'}}>
           <UsersList onlineUsers={onlineUsers}/>
         </Box>
-        <Box sx={{width: '65%' }}>
-          <Box sx={{marginBottom: '20px', height: '400px', overflowY: 'auto'}}>
+        <Box sx={{
+          padding: '20px 0 20px 20px',
+          width: '65%',
+          border: '1px solid rgba(110,104,104,0.28)',
+          backgroundColor: 'rgba(234,231,231,0.34)',
+          borderRadius: '10px'
+        }}>
+          <Box sx={{marginBottom: '20px', height: '380px', overflowY: 'auto'}} ref={messagesRef}>
             {messages.length > 0 ?
               <Messages messages={messages}/>
               :
@@ -103,14 +117,17 @@ const ChatPage = () => {
             <form
               onSubmit={onSubmit}
               style={{
-                width: '100%',
+                width: '98%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-around',
                 flexWrap: 'wrap',
+                backgroundColor: 'rgb(248,245,245)',
+                padding: '10px',
+                borderRadius: '10px'
               }}
             >
-              <Box sx={{width: '80%', marginBottom: '10px'}}>
+              <Box sx={{width: '80%', marginBottom: '5px'}}>
                 <TextField
                   multiline
                   sx={{width: '100%'}}
@@ -121,6 +138,7 @@ const ChatPage = () => {
                   name="message"
                   value={newMessage}
                   onChange={onChange}
+                  required
                 />
               </Box>
               <Box>

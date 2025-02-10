@@ -5,32 +5,39 @@ import Typography from '@mui/material/Typography';
 import { List, ListItem } from '@mui/material';
 
 interface Props {
-  users: OnlineUsers
+  user: OnlineUsers
 }
 
-const UsersItem: React.FC<Props> = ({users}) => {
+const UsersItem: React.FC<Props> = ({user}) => {
   return (
     <>
       <Box
         sx={{
-          width: '100%',
-          maxWidth: 360,
-          bgcolor: 'background.paper',
-          borderRight: '1px solid #e0e0e0',
+          width: '300px',
+          borderRadius: '10px',
+          margin: '10px auto',
+          bgcolor: 'rgba(213,210,210,0.93)',
           overflowY: 'auto',
         }}>
         <List>
-          <ListItem
-            sx={{
-              '&:hover': {
-                backgroundColor: 'lightgrey',
-                cursor: 'pointer',
-              },
-              padding: '8px 16px',
-            }}>
-        <Typography variant="h5">
-          {users.username}
-        </Typography>
+          <ListItem>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '290px'
+              }}
+            >
+              <Box sx={{display: 'flex', alignItems: 'center'}}>
+                <img width="30" height="30" src="https://img.icons8.com/office/40/user.png" alt="user"/>
+                <Typography sx={{marginLeft: '10px', fontSize: '20px'}}>
+                  {user.username}
+                </Typography>
+              </Box>
+              <img width="20" height="20" src="https://img.icons8.com/emoji/48/green-circle-emoji.png"
+                          alt="green-circle-emoji"/>
+            </Box>
           </ListItem>
         </List>
       </Box>

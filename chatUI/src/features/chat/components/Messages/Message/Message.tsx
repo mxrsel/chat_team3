@@ -22,7 +22,7 @@ const Message:React.FC<Props> = ({message}) => {
       {user && message.user && user.username === message.user.username ?
         <Box
           sx={{
-            marginBottom: '20px',
+            marginBottom: '10px',
             width: '45%',
             marginLeft: 'auto',
             marginRight: '10px',
@@ -77,7 +77,7 @@ const Message:React.FC<Props> = ({message}) => {
         <Box
           sx={{
             width: '45%',
-            marginBottom: '20px',
+            marginBottom: '10px',
             gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
           }}
         >
@@ -118,7 +118,7 @@ const Message:React.FC<Props> = ({message}) => {
                   </Typography>
                 </Box>
               </Box>
-              <Typography level="title-md">{message.user?.username}</Typography>
+              <Typography level="title-md"><b>{message.user?.username}</b></Typography>
               <Typography>{message.message}</Typography>
             </CardContent>
           </Card>

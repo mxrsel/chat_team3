@@ -42,6 +42,9 @@ const RegisterPage = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          backgroundColor: 'rgba(234,231,231,0.96)',
+          padding: '20px',
+          borderRadius: '10px',
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
