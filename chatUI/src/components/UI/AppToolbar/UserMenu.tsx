@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { useAppDispatch } from "../../../app/hooks.ts";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { User } from "../../../typesUI.ts";
 import { logout } from "../../../features/users/usersThunks.ts";
 import { unsetUser } from "../../../features/users/usersSlice.ts";
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const UserMenu: React.FC<Props> = ({ user }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);;
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -39,19 +39,6 @@ const UserMenu: React.FC<Props> = ({ user }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {user && user.role === "moderator" && (
-          <MenuItem
-            onClick={() => {
-              navigate("/moderator");
-              setAnchorEl(null);
-            }}
-            component={NavLink}
-            to={"/moderator"}
-          >
-            Moderator
-          </MenuItem>
-        )}
-
         <MenuItem onClick={HandleLogout}>Logout</MenuItem>
       </Menu>
     </>

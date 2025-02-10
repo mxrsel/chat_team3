@@ -18,12 +18,14 @@ const run = async () => {
       password: "123",
       token: randomUUID(),
       role: "moderator",
+      isOnline: false,
     },
     {
       username: "John",
       password: "123",
       token: randomUUID(),
       role: "user",
+      isOnline: false,
     });
 
   await db.close();

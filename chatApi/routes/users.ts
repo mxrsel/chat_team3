@@ -1,35 +1,24 @@
 import express from "express";
+import {Error} from "mongoose";
 import User from "../models/User";
-import { Error } from "mongoose";
-import auth from "../middlewear/auth";
-import { RequestWithUser } from "../middlewear/auth";
+import auth, { RequestWithUser } from '../middlewear/auth';
 
 
 const usersRouter = express.Router();
 
-usersRouter.get('/', async(_req, res, next) => {
-  try {
-    const onlineUsers = await User.find({isPublished: true});
-
-    if(!onlineUsers) {
-      res.status(401).send('Can not display list')
-    }
-
-    res.status(200).send(onlineUsers);
-  } catch(e) {
-    next(e)
-  }
-})
-
-usersRouter.post("/register", async (req, res, next) => {
+usersRouter.post('/register', async (req, res, next) => {
   try {
     const user = new User({
       username: req.body.username,
       password: req.body.password,
+      displayName: req.body.displayName,
+      phoneNumber: req.body.phoneNumber
     });
+
     user.generateToken();
+
     await user.save();
-    res.send({ user, message: "Register successfully" });
+    res.send({user, message: "Registration was successful!"});
   } catch (error) {
     if (error instanceof Error.ValidationError) {
       res.status(400).send(error);
@@ -39,39 +28,50 @@ usersRouter.post("/register", async (req, res, next) => {
   }
 });
 
-usersRouter.post("/sessions", async (req, res) => {
-  const user = await User.findOne({ username: req.body.username });
-  if (!user) {
-    res.status(400).send({ error: "Username not found" });
-    return;
-  }
-  const isMatch = await user.checkPassword(req.body.password);
-  if (!isMatch) {
-    res.status(400).send({ error: "Password is wrong" });
-    return;
-  }
+usersRouter.post('/sessions', async (req, res, next) => {
+  try {
+    const user = await User.findOne({username: req.body.username});
+
+    if (!user) {
+      res.status(400).send({error: 'Invalid user name.'});
+      return;
+    }
+
+    const isMatch = await user.checkPassword(req.body.password);
+
+    if (!isMatch) {
+      res.status(400).send({error: 'Invalid password'});
+      return;
+    }
+
     user.generateToken();
     await user.save();
-  res.send({ message: "Username and password correct!", user });
+
+    res.send({message: 'You have successfully logged in!', user});
+
+  } catch (error) {
+    if (error instanceof Error.ValidationError) {
+      res.status(400).send(error);
+      return;
+    }
+    next(error);
+  }
 });
 
-usersRouter.delete("/sessions", auth, async (req, res, next) => {
-  const reqWithAuth = req as RequestWithUser;
+usersRouter.delete('/sessions', auth, async (req, res, next) => {
+  let reqWithAuth = req as RequestWithUser;
   const userFromAuth = reqWithAuth.user;
   try {
-    const user = await User.findOne({ _id: userFromAuth._id});
+    const user = await User.findOne({_id: userFromAuth._id});
+
     if (user) {
       user.generateToken();
-      user.isOnline = false
       await user.save();
-      res.send({
-        message: "Success logout",
-      });
+      res.send({message: 'You have successfully logged out.'});
     }
   } catch (e) {
     next(e);
   }
 });
-
 
 export default usersRouter;
