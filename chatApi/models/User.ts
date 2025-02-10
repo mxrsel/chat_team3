@@ -1,5 +1,4 @@
 import mongoose, { HydratedDocument, Model } from 'mongoose';
-
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'node:crypto';
 import { UserFields } from '../typesDb';
@@ -47,10 +46,6 @@ const UserSchema = new Schema<
   token: {
     type: String,
     required: true,
-  },
-  isOnline: {
-    type: Boolean,
-    default: false,
   }
 });
 

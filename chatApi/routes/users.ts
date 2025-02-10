@@ -3,7 +3,6 @@ import {Error} from "mongoose";
 import User from "../models/User";
 import auth, { RequestWithUser } from '../middlewear/auth';
 
-
 const usersRouter = express.Router();
 
 usersRouter.post('/register', async (req, res, next) => {
@@ -11,8 +10,6 @@ usersRouter.post('/register', async (req, res, next) => {
     const user = new User({
       username: req.body.username,
       password: req.body.password,
-      displayName: req.body.displayName,
-      phoneNumber: req.body.phoneNumber
     });
 
     user.generateToken();

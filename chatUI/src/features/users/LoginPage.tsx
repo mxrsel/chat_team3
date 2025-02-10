@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
@@ -7,20 +7,21 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Avatar, Button } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
-import { selectLoginError } from './usersSlice.ts';
+import { selectLoginError, selectLoginLoading } from './usersSlice.ts';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { login } from './usersThunks.ts';
 import { RegisterMutation } from '../../typesUI.ts';
+import Spinner from '../../components/UI/Spinner/Spinner.tsx';
 
 const RegisterPage = () => {
   const dispatch = useAppDispatch();
   const loginError = useAppSelector(selectLoginError);
+  const spinner = useAppSelector(selectLoginLoading);
   const navigate = useNavigate();
   const [form, setForm] = useState<RegisterMutation >({
     username: "",
     password: "",
   });
-
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
@@ -32,7 +33,6 @@ const RegisterPage = () => {
     await dispatch(login(form)).unwrap();
     navigate('/');
   };
-
 
   return (
     <Container component="main" maxWidth="xs">
@@ -83,12 +83,14 @@ const RegisterPage = () => {
             </Grid>
           </Grid>
           <Button
+            disabled={spinner}
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
             Sign In
+            {spinner ? <Spinner/> : null}
           </Button>
           <Grid container justifyContent="center">
             <Grid >

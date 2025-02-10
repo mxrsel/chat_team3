@@ -12,7 +12,6 @@ const App = () => {
       <header>
         <AppToolbar />
       </header>
-
       <main>
         <Container maxWidth="xl">
           <Routes>

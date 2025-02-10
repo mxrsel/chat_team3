@@ -1,7 +1,6 @@
-
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store.ts';
-import { googleLogin, login, register } from './usersThunks.ts';
+import { login, register } from './usersThunks.ts';
 import { GlobalError, User, ValidationError } from '../../typesUI.ts';
 
 
@@ -24,7 +23,6 @@ const initialState: UsersState = {
 export const selectUser = (state: RootState) => state.users.user;
 export const selectRegisterLoading = (state: RootState) => state.users.registerLoading;
 export const selectRegisterError = (state: RootState) => state.users.registerError;
-
 export const selectLoginLoading = (state: RootState) => state.users.loginLoading;
 export const selectLoginError = (state: RootState) => state.users.loginError;
 
@@ -50,7 +48,6 @@ export const usersSlice = createSlice({
         state.registerLoading = false;
         state.registerError = error || null;
       })
-
       .addCase(login.pending, (state) => {
         state.loginLoading = true
         state.loginError = null;
@@ -62,19 +59,7 @@ export const usersSlice = createSlice({
       .addCase(login.rejected, (state, {payload: error}) => {
         state.loginLoading = false;
         state.loginError = error || null;
-      })
-    builder.addCase(googleLogin.pending, (state) => {
-      state.loginLoading = true;
-    });
-    builder.addCase(googleLogin.fulfilled, (state, { payload: user }) => {
-      state.loginLoading = false;
-      state.user = user;
-    });
-    builder.addCase(googleLogin.rejected, (state, { payload: error }) => {
-      state.loginLoading = false;
-      state.loginError = error || null;
-    });
-
+      });
   }
 });
 

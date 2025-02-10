@@ -28,23 +28,10 @@ const ChatPage = () => {
 
     ws.current = new WebSocket('ws://localhost:8000/chat');
 
-    ws.current.onopen = () => {
-      console.log('WebSocket connected');
-
-      if (ws.current) {
-        ws.current.send(
-          JSON.stringify({
-            type: 'USER_LOGIN',
-            payload: user.token,
-          }),
-        );
-      }
-    };
-
-    ws.current.onmessage = (event) => {
+    ws.current?.addEventListener('message', (event) => {
       const decodedMessage = JSON.parse(event.data);
 
-      if (decodedMessage.type === 'LOGIN_USER') {
+      if (decodedMessage.type === 'LOGIN') {
         setMessages(decodedMessage.payload);
 
         if (ws.current) {
@@ -64,16 +51,7 @@ const ChatPage = () => {
       if (decodedMessage.type === 'NEW_MESSAGE') {
         setMessages((prevState) => [...prevState, decodedMessage.payload]);
       }
-    };
-
-    ws.current.close = () => {
-      console.log('WS disconnected');
-      ws.current!.send(JSON.stringify({
-        type: 'USER_LOGOUT',
-        payload: user.token,
-      }));
-    };
-
+    });
 
     return () => {
       if (ws.current) {
@@ -81,6 +59,7 @@ const ChatPage = () => {
         console.log('Connection closed');
       }
     };
+
   }, [navigate, user]);
 
 
@@ -94,18 +73,16 @@ const ChatPage = () => {
     if (!ws.current) return;
 
     if (user) {
-      ws.current?.send(
-        JSON.stringify({
-          type: 'NEW_MESSAGE',
-          payload: {
-            user: user._id,
-            message: newMessage,
-          },
-        })
-      );
-
-      setNewMessage('');
+      ws.current.send(JSON.stringify({
+        type: 'NEW_MESSAGE',
+        payload: {
+          user: user._id,
+          message: newMessage,
+        },
+      }));
     }
+
+    setNewMessage('');
   };
 
   return (

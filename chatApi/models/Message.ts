@@ -18,13 +18,5 @@ const MessageSchema = new Schema({
   },
 });
 
-MessageSchema.pre('save', function (next) {
-  if (!this.message) {
-    next(new Error('Message is missing'));
-  } else {
-    next();
-  }
-});
-
 const Message = mongoose.model('Message', MessageSchema);
 export default Message;
