@@ -99,16 +99,9 @@ const ChatPage = () => {
 
   return (
     <Container>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          height: "420px",
-          flexWrap: "wrap",
-        }}
-      >
-        <Box sx={{ width: "350px" }}>
-          <UsersList onlineUsers={onlineUsers} />
+      <Box sx={{display: 'flex', justifyContent: 'space-between', height: '420px', flexWrap: 'wrap'}}>
+        <Box sx={{width: '350px', marginBottom: '20px'}}>
+          <UsersList onlineUsers={onlineUsers}/>
         </Box>
         <Box sx={{
           padding: '20px 0 20px 20px',
@@ -123,17 +116,6 @@ const ChatPage = () => {
               :
               <Typography level="h1" sx={{margin: '20%'}}>No message yet!</Typography>
             }
-        <Box sx={{ width: "65%" }}>
-          <Box
-            sx={{ marginBottom: "20px", height: "400px", overflowY: "auto" }}
-          >
-            {messages.length > 0 ? (
-              <Messages messages={messages} />
-            ) : (
-              <Typography level="h1" sx={{ margin: "20%" }}>
-                No message yet!
-              </Typography>
-            )}
           </Box>
           <Box>
             <form
@@ -147,18 +129,12 @@ const ChatPage = () => {
                 backgroundColor: 'rgb(248,245,245)',
                 padding: '10px',
                 borderRadius: '10px'
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                flexWrap: "wrap",
               }}
             >
               <Box sx={{width: '80%', marginBottom: '5px'}}>
-              <Box sx={{ width: "80%", marginBottom: "10px" }}>
                 <TextField
                   multiline
-                  sx={{ width: "100%" }}
+                  sx={{width: '100%'}}
                   variant="outlined"
                   placeholder="message"
                   minRows={1}
@@ -171,11 +147,11 @@ const ChatPage = () => {
               </Box>
               <Box>
                 <Button
-                  sx={{ width: "90px" }}
+                  sx={{width: '90px'}}
                   type="submit"
                   variant="contained"
                 >
-                  <SendIcon fontSize="medium" sx={{ margin: "2px auto" }} />
+                  <SendIcon fontSize='medium' sx={{margin: '2px auto'}}/>
                 </Button>
               </Box>
             </form>

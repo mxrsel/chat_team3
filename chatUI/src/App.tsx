@@ -5,7 +5,6 @@ import LoginPage from "./features/users/LoginPage.tsx";
 import RegisterPage from "./features/users/RegisterPage.tsx";
 import ChatPage from './features/chat/containers/ChatPage.tsx';
 import './App.css';
-import ChatPage from "./features/chat/containers/ChatPage.tsx";
 
 const App = () => {
   return (
